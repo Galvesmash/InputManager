@@ -36,8 +36,10 @@ namespace TeamUtility.IO
 		public string name;
 		public List<AxisConfiguration> axes;
 		public bool isExpanded;
-		
-		public InputConfiguration() :
+
+        public Dictionary<string, AxisConfiguration> axisTable;
+
+        public InputConfiguration() :
 			this("New Configuration") { }
 		
 		public InputConfiguration(string name)
@@ -45,7 +47,8 @@ namespace TeamUtility.IO
 			axes = new List<AxisConfiguration>();
 			this.name = name;
 			isExpanded = false;
-		}
+            axisTable = new Dictionary<string, AxisConfiguration>();
+        }
 		
 		public static InputConfiguration Duplicate(InputConfiguration source)
 		{
@@ -60,5 +63,23 @@ namespace TeamUtility.IO
 			
 			return inputConfig;
 		}
-	}
+
+
+        public void UpdateAxes()
+        {
+            axisTable.Clear();
+
+            foreach( AxisConfiguration axisConfig in axes )
+            {
+                if( !axisTable.ContainsKey( axisConfig.name ) )
+                {
+                    axisTable.Add( axisConfig.name, axisConfig );
+                }
+                else
+                {
+                    Debug.LogWarning( string.Format( "Input configuration \'{0}\' already contains an axis named \'{1}\'", name, axisConfig.name ) );
+                }
+            }
+        }
+    }
 }

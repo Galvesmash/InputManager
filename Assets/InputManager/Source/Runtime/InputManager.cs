@@ -196,20 +196,9 @@ namespace TeamUtility.IO
 			_axesTable.Clear();
 			foreach(InputConfiguration inputConfig in inputConfigurations)
 			{
-				Dictionary<string, AxisConfiguration> table = new Dictionary<string, AxisConfiguration>();
-				foreach(AxisConfiguration axisConfig in inputConfig.axes)
-				{
-					if(!table.ContainsKey(axisConfig.name))
-					{
-						table.Add(axisConfig.name, axisConfig);
-					}
-					else
-					{
-						Debug.LogWarning(string.Format("Input configuration \'{0}\' already contains an axis named \'{1}\'", inputConfig.name, axisConfig.name));
-					}
-				}
+                inputConfig.UpdateAxes();
 				
-				_axesTable.Add(inputConfig.name, table);
+				_axesTable.Add(inputConfig.name, inputConfig.axisTable );
 			}
 		}
 		
@@ -715,7 +704,7 @@ namespace TeamUtility.IO
 			InputConfiguration inputConfig = new InputConfiguration(name);
 			_instance.inputConfigurations.Add(inputConfig);
 			_instance._configurationTable.Add(name, inputConfig);
-			_instance._axesTable.Add(name, new Dictionary<string, AxisConfiguration>());
+			_instance._axesTable.Add(name, inputConfig.axisTable );
 			
 			return inputConfig;
 		}
