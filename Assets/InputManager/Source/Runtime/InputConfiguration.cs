@@ -34,10 +34,24 @@ namespace TeamUtility.IO
 		/// Do not change the name of an input configuration at runtime because it will invalidate the lookup tables.
 		/// </summary>
 		public string name;
+
+        /// <summary>
+		/// All configured axes. Call <c>UpdateAxes()</c> if change this list.
+		/// </summary>
 		public List<AxisConfiguration> axes;
+
+
 		public bool isExpanded;
-		
-		public InputConfiguration() :
+
+        /// <summary>
+        /// Maps axis names to axes.
+        /// </summary>
+        internal Dictionary<string, AxisConfiguration> _axisTable
+        {
+            get; private set;
+        }
+
+        public InputConfiguration() :
 			this("New Configuration") { }
 		
 		public InputConfiguration(string name)
@@ -45,7 +59,8 @@ namespace TeamUtility.IO
 			axes = new List<AxisConfiguration>();
 			this.name = name;
 			isExpanded = false;
-		}
+            _axisTable = new Dictionary<string, AxisConfiguration>();
+        }
 		
 		public static InputConfiguration Duplicate(InputConfiguration source)
 		{
@@ -57,8 +72,32 @@ namespace TeamUtility.IO
 			{
 				inputConfig.axes.Add(AxisConfiguration.Duplicate(source.axes[i]));
 			}
-			
-			return inputConfig;
+
+            inputConfig.UpdateAxes();
+
+            return inputConfig;
 		}
-	}
+
+        /// <summary>
+		/// Updates internal axes data.
+        /// Call when you add new <c>AxisConfiguration</c> to <c>axes</c> or
+        /// change their names.
+		/// </summary>
+        public void UpdateAxes()
+        {
+            _axisTable.Clear();
+
+            foreach( AxisConfiguration axisConfig in axes )
+            {
+                if( !_axisTable.ContainsKey( axisConfig.name ) )
+                {
+                    _axisTable.Add( axisConfig.name, axisConfig );
+                }
+                else
+                {
+                    Debug.LogWarning( string.Format( "Input configuration \'{0}\' already contains an axis named \'{1}\'", name, axisConfig.name ) );
+                }
+            }
+        }
+    }
 }
